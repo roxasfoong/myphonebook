@@ -35,6 +35,15 @@
     border: 5px outset #FF4242;
   }
 
+  .border-line-3{
+    border: 5px outset #373737;
+  }
+
+  .border-line-4{
+    border: 5px outset #615eff;
+  }
+
+
 
 
 /* Usage Found in: contacts_view */

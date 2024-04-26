@@ -1,7 +1,7 @@
 <?php if ($this->session->userdata('user_id')) : ?>
   <?php redirect('dashboard'); ?>
 <?php else : ?>
-  
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,9 +10,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
-  <link rel="stylesheet" type="text/css" href="/assets/css/sweetalert2.min.css">
-  <script src="/assets/js/sweetalert2.min.js"></script>
-  <title>Login Page | MyPhoneBook</title>
+
+  <title>Register Page | MyPhoneBook</title>
 </head>
 
 <body>
@@ -33,7 +32,7 @@
             <h1 class="text-center fw-normal">Welcome to MyPhoneBook<h1>
           </div>
 
-          <div class="card-header d-flex justify-content-center align-items-center">Login</div>
+          <div class="card-header d-flex justify-content-center align-items-center">Register</div>
 
           <div class="row text-center">
             <div class="col-12 m-auto">
@@ -44,43 +43,50 @@
                 </div>
               <?php endif; ?>
               
-              <?php if ($this->session->flashdata('login_errors')) : ?>
-                <div class="alert alert-danger" role="alert">
-                <b><?php echo $this->session->flashdata('login_errors'); ?></b>
-                </div>
-              <?php endif; ?>
-
               <?php if ($this->session->flashdata('db_errors')) : ?>
                 <div class="alert alert-danger" role="alert">
                 <b><?php echo $this->session->flashdata('db_errors'); ?></b>
                 </div>
               <?php endif; ?>
+              <?php if ($this->session->flashdata('some_errors')) : ?>
+                <div class="alert alert-danger" role="alert">
+                <b><?php echo $this->session->flashdata('some_errors'); ?></b>
+                </div>
+              <?php endif; ?>
             </div>
           </div>
-
           <div class="card-body">
 
-            <form method="post" action="<?php echo site_url('auth/login'); ?>">
+            <form method="post" action="<?php echo site_url('auth/register'); ?>">
+
+              <div class="mb-3">
+                <label for="nickname" class="form-label">Nickname:</label>
+                <input name="nickname" type="text" class="form-control" id="nickname" required>
+              </div>
 
               <div class="mb-3">
                 <label for="email" class="form-label">Email address:</label>
                 <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
               </div>
 
-              <div class="mb-5">
+              <div class="mb-3">
                 <label for="password" class="form-label">Password:</label>
                 <input name="password" type="password" class="form-control" id="password" required>
-                <a href="#" class="forgot-password-link small d-flex justify-content-end">Forgot Password?</a>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirm-password" class="form-label">Confirm Password:</label>
+                <input name="confirm_password" type="password" class="form-control" id="confirm-password" required>
               </div>
 
               <div class="mb-5 d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary border-line-4">Login</button>
+                <button type="submit" class="btn btn-primary border-line-4">Sign Up</button>
               </div>
 
             </form>
 
             <div class="col-md-12">
-              <p class="text-center mb-0">Don't have an account? <a href="<?php echo base_url('register'); ?>" class="signup-link">Sign up</a></p>
+              <p class="text-center mb-0">Have an account? <a href="<?php echo base_url('login'); ?>" class="signup-link">Login</a></p>
             </div>
 
           </div>
@@ -93,18 +99,8 @@
     </div>
 
   </div>
-  <?php if ($this->session->flashdata('success')) : ?>
-    <script>
-      Swal.fire({
-        title: 'Success!',
-        text: '<?php echo $this->session->flashdata('success'); ?>',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 3000 
-      });
-    </script>
-  <?php endif; ?>
-</body>
 
+
+</body>
 </html>
 <?php endif; ?>

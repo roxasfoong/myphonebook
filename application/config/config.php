@@ -530,3 +530,13 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+
+/* session setting */
+$config['sess_driver'] = 'files';
+$config['sess_save_path'] = APPPATH . 'session';
+$config['sess_cookie_name'] = 'ci_session';
+$config['sess_expiration'] = 86400;
+
+/* remove index.php during site_url or redirect */
+$config['index_page'] = '';

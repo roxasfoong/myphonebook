@@ -40,7 +40,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $autoload['packages'] = array();
-$autoload['helper'] = array('url');
+
+
+
 
 /*
 | -------------------------------------------------------------------
@@ -59,7 +61,7 @@ $autoload['helper'] = array('url');
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array();
+
 
 /*
 | -------------------------------------------------------------------
@@ -134,3 +136,8 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array();
+
+/* autoload all library */
+$autoload['helper'] = array('url', 'form', 'security');
+//$autoload['libraries'] = array('session', 'database', 'form_validation');
+$autoload['libraries'] = array('session', 'form_validation');

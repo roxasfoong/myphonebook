@@ -53,5 +53,5 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['dashboard'] = 'dashboard';
-$route['signup'] = 'signup';
+$route['register'] = 'register';
 

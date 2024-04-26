@@ -11,6 +11,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/sweetalert2.min.css">
+<script src="/assets/js/sweetalert2.min.js"></script>
 
 <title> <?php echo $title; ?> | MyPhoneBook</title>
 </head>
