@@ -1,6 +1,10 @@
 <?php
 class Contact_model extends CI_Model
 {
+    public function __construct() {
+        $this->load->library('pagination');
+    }
+
     public function load_database()
     {
 
@@ -53,9 +57,81 @@ class Contact_model extends CI_Model
 
     }
 
-    public function get_all_contacts()
+    public function get_all_contacts($user_id)
     {
-        return $this->db->get('contacts')->result_array();
+        $result = $this->db->where('user_id', $user_id)->order_by('created_at', 'ASC')->get('contacts')->result_array();
+
+        if (empty($result)) {
+            return null;
+        }
+
+        foreach ($result as &$contact) {
+            unset($contact['id']);
+            unset($contact['user_id']);
+        }
+
+        return $result;
+    }
+
+    public function get_total_number_of_page($user_id)
+    {
+        $total = count($this->db->where('user_id', $user_id)->order_by('created_at', 'ASC')->get('contacts')->result_array());
+
+        if (empty($total) ) {
+            return 0;
+        }
+
+        $result = ($total % 8 > 0) ? (int)($total / 8) + 1 : (int)($total / 8);
+
+        return $result;
+    }
+
+
+
+    public function get_all_contacts_with_pagination($user_id, $page_number)
+    {
+        $config['base_url'] = site_url('dashboard/index');
+        $config['per_page'] = 8;
+        $config['num_links'] = 1;
+    
+        $total_rows = count($this->db->where('user_id', $user_id)->get('contacts')->result_array());
+    
+        if ($total_rows == 0) {
+            return null;
+        }
+    
+        $config['total_rows'] = $total_rows;
+        $this->pagination->initialize($config);
+        $pageNumber=0;
+        $total_pages = (($total_rows % 8) > 0 ) ? (int)($total_rows / 8) + 1 : (int)($total_rows / 8);
+        $InputFromUrl = $this->uri->segment(3,0);
+        if($InputFromUrl > $total_rows){
+            $pageNumber = ($total_pages-1) * 8;
+        }elseif ($InputFromUrl % 8 > 0 )
+        {
+            $pageNumber = floor($InputFromUrl / 8) * 8;
+
+        }elseif($InputFromUrl == $total_rows){
+            $pageNumber = (($InputFromUrl/8)-1) * 8;
+        }else{
+            $pageNumber = $InputFromUrl;
+        }
+        
+
+    
+        $result = $this->db
+            ->where('user_id', $user_id)
+            ->order_by('created_at', 'ASC')
+            ->limit(8,$pageNumber)
+            ->get('contacts')
+            ->result_array();
+    
+        foreach ($result as &$contact) {
+            unset($contact['id']);
+            unset($contact['user_id']);
+        }
+    
+        return $result;
     }
 
     public function get_contact_by_id($contact_id)
@@ -73,7 +149,7 @@ class Contact_model extends CI_Model
         $this->db->where('id', $contact_id);
         $result = $this->db->update('contacts', $data);
 
-        if($image_location !== $data['image_location']){
+        if($image_location !== $data['image_location'] && ($image_location !== '/assets/img/empty-profile-picture.webp')){
             unlink(FCPATH.$image_location);
         }
 

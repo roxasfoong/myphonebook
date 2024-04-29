@@ -10,7 +10,7 @@
   <div class="container-sm">
     <div class="row">
       <div class="col-6 d-flex justify-content-center align-items-center">
-        <a href="#" class="text-decoration-none text-white fw-bold">
+        <a href="/" class="text-decoration-none text-white fw-bold">
           <img src="/assets/img/logo-small.png" class="img-fluid" alt="Description of your image">MyPhoneBook
         </a>
       </div>

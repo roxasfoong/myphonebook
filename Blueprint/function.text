@@ -120,3 +120,15 @@ $quality = 10;
 imagewebp($resized_image, 'path/to/resized.webp', $quality);
 imagedestroy($original_image);
 imagedestroy($resized_image);
+
+
+$config['base_url'] = base_url() . $this->uri->segment(3);
+$total_rows = $this->db->count_all_results('your_table');
+$config['total_rows'] = $total_rows;
+$config['per_page'] = 12;
+
+$this->pagination->initialize($config);
+
+$data['results'] = $this->db->get('table', $config['per_page'], $this->uri->segment(3));
+
+$this->load->view('your_view', $data);

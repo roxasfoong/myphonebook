@@ -20,7 +20,6 @@
 <body>
   <?php $this->load->view($header_view); ?>
   <?php $this->load->view($recently_added_view); ?>
-  <?php $this->load->view($utility_view); ?>
   <?php $this->load->view($contacts_view); ?>
 
 
@@ -51,7 +50,6 @@
   <?php endif; ?>
 
   <script>
-    
     document.getElementById('add-new-btn').addEventListener('click', function() {
       Swal.fire({
         title: 'Add New Contact',
@@ -145,10 +143,10 @@
             url: '<?php echo site_url("api/add_contact"); ?>',
             type: 'POST',
             data: formData,
-            processData: false, 
-            contentType: false, 
+            processData: false,
+            contentType: false,
             success: function(response) {
-              
+
 
               var responseData = JSON.parse(response);
               var status = responseData.status;
@@ -156,12 +154,13 @@
               //console.log(`<b>${message}<b>`);
               if (status === 'success') {
                 refreshRecentlyAdded();
+                window.location.href = window.location.pathname;
                 Swal.fire({
                   title: 'Success!',
                   html: `<b> ${message} <b> `,
                   icon: 'success',
                   showConfirmButton: false,
-                  
+
                   timer: 1000
                 });
               } else {
@@ -177,7 +176,7 @@
               }
             },
             error: function(xhr, status, error) {
-              
+
               console.error(xhr.responseText);
               if (xhr.responseText.includes('Duplicate entry')) {
 
@@ -220,26 +219,26 @@
         contentType: false,
         success: function(response) {
 
-        var responseData = JSON.parse(response);
-        var status = responseData.status;
-        var message = responseData.message;
-        var data = responseData.data;
-        //console.log("Data:", data.name);
+          var responseData = JSON.parse(response);
+          var status = responseData.status;
+          var message = responseData.message;
+          var data = responseData.data;
+          //console.log("Data:", data.name);
 
-        var container = document.getElementById('recentlyContainer');
-        container.innerHTML = '';
+          var container = document.getElementById('recentlyContainer');
+          container.innerHTML = '';
 
-        var firstPart =
-        `
+          var firstPart =
+            `
         <div class="card add-shadow-2">
         <div class="card-header bg-success text-white">
             <h3 class="m-0">The Last Added Contacts</h3>
         </div>
         `;
 
-        if(status ==='success'){
-        var secondPart =
-        `
+          if (status === 'success') {
+            var secondPart =
+              `
         <div class="card-body">
                 <div class="row">
                     <div class="col-sm-8 col-md-6 col-lg-4 col-xl-4 col-11 m-auto">
@@ -290,11 +289,9 @@
                 </div>
             </div>
         `
-        }
-        else
-        {
-          var secondPart =
-        `
+          } else {
+            var secondPart =
+              `
         <div class="card-body">
                 <div class="row">
                     <div class="col-12 m-auto">
@@ -311,15 +308,15 @@
                 </div>
             </div>
         `
-        }
+          }
 
-        var thirdPart =
-        `
+          var thirdPart =
+            `
          </div>
         </div>
         `;
 
-        container.innerHTML = firstPart + secondPart + thirdPart;
+          container.innerHTML = firstPart + secondPart + thirdPart;
 
         },
         error: function(xhr, status, error) {
@@ -330,9 +327,9 @@
 
 
 
-function deleteContact(input_phone_number) {
-    event.preventDefault();
-    Swal.fire({
+    function deleteContact(input_phone_number) {
+      event.preventDefault();
+      Swal.fire({
         title: 'Are you confirm to delete it?',
         text: 'You won\'t be able to revert this!',
         icon: 'warning',
@@ -340,16 +337,18 @@ function deleteContact(input_phone_number) {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#000000',
         confirmButtonText: 'Confirm'
-    }).then((result) => {
+      }).then((result) => {
 
- 
+
         if (result.isConfirmed) {
 
           $.ajax({
             url: '<?php echo site_url("api/delete_contact"); ?>',
             type: 'POST',
             contentType: 'application/json',
-            data: {phone_number : input_phone_number},
+            data: {
+              phone_number: input_phone_number
+            },
             success: function(response) {
               
 
@@ -367,8 +366,8 @@ function deleteContact(input_phone_number) {
                 });
 
                 refreshRecentlyAdded();
-              } 
-              else {
+                window.location.href = window.location.pathname;
+              } else {
                 Swal.fire({
                   title: 'Error!',
                   showConfirmButton: false,
@@ -411,29 +410,31 @@ function deleteContact(input_phone_number) {
           });
 
         }
-    });
-}
+      });
+    }
 
-function editContact(input_phone_number) {
-    event.preventDefault();
-          $.ajax({
-            url: '<?php echo site_url("api/get_contact_for_edit"); ?>',
-            type: 'POST',
-            contentType: 'application/json',
-            data: {phone_number : input_phone_number},
-            success: function(response) {
-              
-              var responseData = JSON.parse(response);
-              var status = responseData.status;
-              var message = responseData.message;
-              var data = responseData.data;
-              //console.log(`<b>${data}<b>`);
+    function editContact(input_phone_number) {
+      event.preventDefault();
+      $.ajax({
+        url: '<?php echo site_url("api/get_contact_for_edit"); ?>',
+        type: 'POST',
+        contentType: 'application/json',
+        data: {
+          phone_number: input_phone_number
+        },
+        success: function(response) {
 
-              if (status === 'success') {
+          var responseData = JSON.parse(response);
+          var status = responseData.status;
+          var message = responseData.message;
+          var data = responseData.data;
+          //console.log(`<b>${data}<b>`);
 
-        Swal.fire({
-        title: 'Edit Contact',
-        html: `
+          if (status === 'success') {
+
+            Swal.fire({
+              title: 'Edit Contact',
+              html: `
         <form id="edit-contact-form">
         <div class="row mb-3">
     <div class="col-sm-6 col-12 m-auto d-flex align-items-center justify-content-center">
@@ -510,131 +511,130 @@ function editContact(input_phone_number) {
 </form>
 
         `,
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#000000',
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        showLoaderOnConfirm: true,
-        preConfirm: () => {
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#000000',
+              confirmButtonText: 'Confirm',
+              cancelButtonText: 'Cancel',
+              showLoaderOnConfirm: true,
+              preConfirm: () => {
 
-          const formData = new FormData(document.getElementById('edit-contact-form'));
-          $.ajax({
-            url: '<?php echo site_url("api/update_contact"); ?>',
-            type: 'POST',
-            data: formData,
-            processData: false, 
-            contentType: false, 
-            success: function(response) {
-              
+                const formData = new FormData(document.getElementById('edit-contact-form'));
+                $.ajax({
+                  url: '<?php echo site_url("api/update_contact"); ?>',
+                  type: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+                  success: function(response) {
 
-              var responseData = JSON.parse(response);
-              var status = responseData.status;
-              var message = responseData.message;
-              //console.log(`<b>${message}<b>`);
-              if (status === 'success') {
-                refreshRecentlyAdded();
-                Swal.fire({
-                  title: 'Success!',
-                  html: `<b> ${message} <b> `,
-                  icon: 'success',
-                  showConfirmButton: false,
-                  
-                  timer: 1000
-                });
-              } else {
-                Swal.fire({
-                  title: 'Error!',
-                  showConfirmButton: false,
-                  html: `<div class="bg-danger text-white"> ${message} </div>`,
-                  icon: 'error',
-                  showConfirmButton: true,
-                  confirmButtonColor: '#d33',
-                  cancelButtonColor: '#000000',
+
+                    var responseData = JSON.parse(response);
+                    var status = responseData.status;
+                    var message = responseData.message;
+                    //console.log(`<b>${message}<b>`);
+                    if (status === 'success') {
+                      window.location.href = window.location.pathname;
+                      refreshRecentlyAdded();
+                      Swal.fire({
+                        title: 'Success!',
+                        html: `<b> ${message} <b> `,
+                        icon: 'success',
+                        showConfirmButton: false,
+
+                        timer: 1000
+                      });
+                    } else {
+                      Swal.fire({
+                        title: 'Error!',
+                        showConfirmButton: false,
+                        html: `<div class="bg-danger text-white"> ${message} </div>`,
+                        icon: 'error',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#000000',
+                      });
+                    }
+                  },
+                  error: function(xhr, status, error) {
+
+                    console.error(xhr.responseText);
+                    if (xhr.responseText.includes('Duplicate entry')) {
+
+                      const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+
+                      const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+
+                      Swal.fire({
+                        title: 'Error!',
+                        text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
+                        icon: 'error',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#000000',
+                      });
+
+
+                    } else {
+                      Swal.fire({
+                        title: 'Error!',
+                        text: 'Some Database Error...',
+                        icon: 'error',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#000000',
+                      });
+                    }
+
+                  }
                 });
               }
-            },
-            error: function(xhr, status, error) {
-              
-              console.error(xhr.responseText);
-              if (xhr.responseText.includes('Duplicate entry')) {
+            });
 
-                const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              showConfirmButton: false,
+              html: `<div class="bg-danger text-white"> ${message} </div>`,
+              icon: 'error',
+              showConfirmButton: true,
+            });
+          }
 
-                const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+        },
+        error: function(xhr, status, error) {
 
-                Swal.fire({
-                  title: 'Error!',
-                  text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
-                  icon: 'error',
-                  showConfirmButton: true,
-                  confirmButtonColor: '#d33',
-                  cancelButtonColor: '#000000',
-                });
+          //console.error(xhr.responseText);
+          if (xhr.responseText.includes('Duplicate entry')) {
+
+            const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+
+            const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+
+            Swal.fire({
+              title: 'Error!',
+              text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
+              icon: 'error',
+              showConfirmButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#000000',
+            });
 
 
-              } else {
-                Swal.fire({
-                  title: 'Error!',
-                  text: 'Some Database Error...',
-                  icon: 'error',
-                  showConfirmButton: true,
-                  confirmButtonColor: '#d33',
-                  cancelButtonColor: '#000000',
-                });
-              }
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              text: 'Some Database Error...',
+              icon: 'error',
+              showConfirmButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#000000',
+            });
+          }
 
-            }
-          });
         }
       });
-
-              } 
-
-              else {
-                Swal.fire({
-                  title: 'Error!',
-                  showConfirmButton: false,
-                  html: `<div class="bg-danger text-white"> ${message} </div>`,
-                  icon: 'error',
-                  showConfirmButton: true,
-                });
-              } 
-
-            },
-            error: function(xhr, status, error) {
-              
-              //console.error(xhr.responseText);
-              if (xhr.responseText.includes('Duplicate entry')) {
-
-                const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
-
-                const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
-
-                Swal.fire({
-                  title: 'Error!',
-                  text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
-                  icon: 'error',
-                  showConfirmButton: true,
-                  confirmButtonColor: '#d33',
-                  cancelButtonColor: '#000000',
-                });
-
-
-              } else {
-                Swal.fire({
-                  title: 'Error!',
-                  text: 'Some Database Error...',
-                  icon: 'error',
-                  showConfirmButton: true,
-                  confirmButtonColor: '#d33',
-                  cancelButtonColor: '#000000',
-                });
-              }
-
-            }
-          });
-}
+    }
   </script>
 
   <script>
@@ -646,8 +646,43 @@ function editContact(input_phone_number) {
           $('#add-image-frame').attr('src', e.target.result);
         }
 
-        reader.readAsDataURL(input.files[0]); 
+        reader.readAsDataURL(input.files[0]);
       }
+    }
+
+    function goToPage() {
+
+      var pageNumber = document.getElementById("pageInput").value;
+
+      if (!isNaN(pageNumber)) {
+
+        switch (true) {
+          case (pageNumber === 0 || pageNumber === 1):
+            pageNumber = 1;
+            break;
+          default:
+            if (pageNumber > 1) {
+              pageNumber -= 1;
+              pageNumber *= 8;
+            }
+            break;
+        }
+
+        window.location.href = "<?php echo site_url('dashboard/index') ?>" + "/" + pageNumber;
+
+      } else {
+
+        Swal.fire({
+          title: 'Error!',
+          text: `Please enter a valid page number.`,
+          icon: 'error',
+          showConfirmButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#000000',
+        });
+
+      }
+
     }
   </script>
 

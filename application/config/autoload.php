@@ -140,4 +140,4 @@ $autoload['model'] = array();
 /* autoload all library */
 $autoload['helper'] = array('url', 'form', 'security');
 //$autoload['libraries'] = array('session', 'database', 'form_validation');
-$autoload['libraries'] = array('session', 'form_validation');
+$autoload['libraries'] = array('session', 'form_validation','pagination');

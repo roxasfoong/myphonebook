@@ -23,7 +23,7 @@ class Api extends CI_Controller
 
                 // Example usage: register a user
                 $data = array(
-                    'user_id' => $this->session->has_userdata('user_id'),
+                    'user_id' => $this->session->userdata('user_id'),
                     'name' => random_string('alpha', 10),
                     'address' => random_string('alnum', 50),
                     'email' => random_string('alnum', 20),
@@ -33,11 +33,14 @@ class Api extends CI_Controller
                 );
 
 
+
                 if ($this->contact_model->insert_contact($data)) {
                     echo "Successfully Insert to Database <br>";
                 } else {
                     echo "Fail to Insert to Database <br>";
                 }
+
+                sleep(2);
             }
         }
     }
@@ -66,7 +69,7 @@ class Api extends CI_Controller
                 } else {
                    
                     $raw_data = $this->input->post();
-                    $raw_data['user_id'] = $this->session->has_userdata('user_id');
+                    $raw_data['user_id'] = $this->session->userdata('user_id');
                     
                     if (!empty($_FILES['image_location']['name'])) {
 
@@ -269,7 +272,7 @@ class Api extends CI_Controller
             if ($this->input->is_ajax_request()) 
             {
 
-                $result = $this->contact_model->get_recently_added_contact($this->session->has_userdata('user_id'));
+                $result = $this->contact_model->get_recently_added_contact($this->session->userdata('user_id'));
 
                 if (!empty($result)) {
                    
@@ -436,7 +439,7 @@ class Api extends CI_Controller
 
 
                     $raw_data = $this->input->post();
-                    $raw_data['user_id'] = $this->session->has_userdata('user_id');
+                    $raw_data['user_id'] = $this->session->userdata('user_id');
                     $sanitized_data = $this->security->xss_clean($raw_data);
                     $contactID = $this->contact_model->get_contact_id($sanitized_data['phone_number'],$sanitized_data['user_id']);
                     if (empty($_FILES['image_location']['name'])) {
