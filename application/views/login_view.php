@@ -1,3 +1,6 @@
+<?
+phpinfo();
+?>
 <?php if ($this->session->userdata('user_id')) : ?>
   <?php redirect('dashboard'); ?>
 <?php else : ?>
@@ -63,12 +66,12 @@
             <form method="post" action="<?php echo site_url('auth/login'); ?>">
 
               <div class="mb-3">
-                <label for="email" class="form-label">Email address:</label>
-                <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+                <div for="email" class="card-label">Email address:</div>
+                <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required autocomplete="true">
               </div>
 
               <div class="mb-5">
-                <label for="password" class="form-label">Password:</label>
+                <div for="password" class="card-label">Password:</div>
                 <input name="password" type="password" class="form-control" id="password" required>
                 <a href="#" class="forgot-password-link small d-flex justify-content-end">Forgot Password?</a>
               </div>
@@ -100,7 +103,17 @@
         text: '<?php echo $this->session->flashdata('success'); ?>',
         icon: 'success',
         showConfirmButton: false,
-        timer: 3000 
+        timer: 2000 
+      });
+    </script>
+  <?php endif; ?>
+  <?php if ($this->session->flashdata('error')) : ?>
+    <script>
+      Swal.fire({
+        title: 'Error!',
+        text: '<?php echo $this->session->flashdata('error'); ?>',
+        icon: 'error',
+        showConfirmButton: true,
       });
     </script>
   <?php endif; ?>

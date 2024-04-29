@@ -1,4 +1,6 @@
 <?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
 class Auth extends CI_Controller {
     public function __construct() {
         parent::__construct();
@@ -8,7 +10,7 @@ class Auth extends CI_Controller {
     public function register() {
         // Set validation rules for registration form
         if($this->user_model->load_database()){
-        $this->form_validation->set_rules('nickname', 'Nickname', 'required');
+        $this->form_validation->set_rules('nickname', 'Nickname', 'required|alpha_numeric');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
         $this->form_validation->set_rules('password', 'Password', 'required');
         $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
@@ -75,6 +77,7 @@ class Auth extends CI_Controller {
                         // Set user session and redirect to dashboard
                         $this->session->set_userdata('user_id', $user['id']);
                         $this->session->set_userdata('user_nickname', $user['nickname']);
+                        $this->session->set_flashdata('success', 'Login successful!');
                         redirect('dashboard');
                     } else {
                         // Display error message
@@ -97,6 +100,7 @@ class Auth extends CI_Controller {
     public function logout() {
         // Destroy session and redirect to login page
         $this->session->unset_userdata('user_id');
+        $this->session->set_flashdata('success', 'Logout Successfully!');
         redirect('login');
     }
 }

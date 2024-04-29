@@ -18,5 +18,9 @@ class Login extends CI_Controller{
 
 	}
 
+	public function info(){
+		$this->load->view('info_view');
+	}
+
 
 }

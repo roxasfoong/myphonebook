@@ -66,7 +66,7 @@
 
               <div class="mb-3">
                 <label for="email" class="form-label">Email address:</label>
-                <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+                <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required autocomplete="true">
               </div>
 
               <div class="mb-3">

@@ -1,0 +1,93 @@
+      /* Ajax Get Without Data */
+        $.ajax({
+        url: '<?php echo site_url("api/add-contact"); ?>',
+        type: 'GET',
+        processData: false,
+        contentType: false,
+        success: function(response) {
+
+        },
+        error: function(xhr, status, error) {
+
+        }
+      });
+      
+      /* Ajax Post With Data */
+      $.ajax({
+            url: '<?php echo site_url("api/add-contact"); ?>',
+            type: 'POST',
+            data: formData,
+            processData: false, // Prevent jQuery from processing the data
+            contentType: false, // Prevent jQuery from setting contentType
+            success: function(response) {
+              // Handle success response
+
+              var responseData = JSON.parse(response);
+              var status = responseData.status;
+              var message = responseData.message;
+              //console.log(`<b>${message}<b>`);
+              if (status === 'success') {
+                Swal.fire({
+                  title: 'Success!',
+                  html: `<b> ${message} <b> `,
+                  icon: 'success',
+                  showConfirmButton: false,
+                  timer: 1000
+                });
+              } 
+              else {
+                Swal.fire({
+                  title: 'Error!',
+                  showConfirmButton: false,
+                  html: `<div class="bg-danger text-white"> ${message} </div>`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                });
+              }
+            },
+            error: function(xhr, status, error) {
+              // Handle error
+              //console.error(xhr.responseText);
+              if (xhr.responseText.includes('Duplicate entry')) {
+
+                const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+
+                const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+
+                Swal.fire({
+                  title: 'Error!',
+                  text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                });
+
+
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Some Database Error...',
+                  icon: 'error',
+                  showConfirmButton: true,
+                });
+              }
+
+            }
+          });
+
+          /*Received JSON data from PHP */
+{
+  "status": "success",
+  "message": "Successfully Retrieved From Database",
+  "data": {
+    "id": "43",
+    "user_id": "1",
+    "name": "dickman",
+    "address": "101th Heaven",
+    "email": "instructor@gmail.com",
+    "phone_number": "88888",
+    "image_location": "/assets/img/empty-profile-picture.webp",
+    "remark": "He is a dick",
+    "created_at": "2024-04-28 12:23:56",
+    "updated_at": "2024-04-28 12:23:56"
+  }
+}

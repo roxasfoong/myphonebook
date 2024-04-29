@@ -24,9 +24,8 @@
             <div class="row">
                 <div class="col-sm-6 col-12 m-auto">
               
-                <label for="inputGroup">Search Contact by Name:</label>
             <div class="input-group">
-                <input type="text" class="form-control" id="searchInput" placeholder="Search by Name...">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search Contact by Name...">
                 <div class="input-group-append">
                     <button id="searchButton" class="btn btn-danger" type="button">Search</button>
                 </div>

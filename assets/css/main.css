@@ -26,6 +26,13 @@
     text-shadow: 2px 2px 0 #4074b5, 2px -2px 0 #4074b5, -2px 2px 0 #4074b5, -2px -2px 0 #4074b5, 2px 0px 0 #4074b5, 0px 2px 0 #4074b5, -2px 0px 0 #4074b5, 0px -2px 0 #4074b5, 0px 0px 0px #FFFFFF;
 }
 
+.swal2-confirm{
+  border: 5px outset #ff0000 !important;
+}
+
+.swal2-cancel{
+  border: 5px outset #000000 !important;
+}
 
   .border-line-1{
     border: 5px outset #ffbc31;
@@ -43,6 +50,11 @@
     border: 5px outset #615eff;
   }
 
+  .fixed-width-label{
+    display: inline-block;
+    width: 130px; /* Adjust the width as needed */
+    text-align: right;
+  }
 
 
 
@@ -77,4 +89,16 @@
 .card-size-1{
   max-height: 500px;
   max-width: 300px;
+}
+
+.fixed-image {
+  width: 200px;
+  height: 250px;
+  overflow: hidden;
+  border: 1px solid #ccc; /* Optional: Add border for styling */
+}
+
+.fixed-image img {
+  width: 100%;
+  height: auto;
 }

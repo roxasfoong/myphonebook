@@ -1,0 +1,122 @@
+   /* Base Function */
+
+    public function get_last_contact()
+    {
+        if (!$this->session->has_userdata('user_id')) {
+            $this->session->set_flashdata('error', 'Session Expired. Please Login Again');
+            redirect('login');
+        }
+
+        if ($this->contact_model->load_database()) {
+
+        }
+        else {
+            $this->session->set_flashdata('error', 'Unable to Communicate with Database...');
+            redirect('dashboard');
+        }
+
+    }
+
+    /* Base Function with Ajax */
+    public function get_last_contact()
+    {
+        if (!$this->session->has_userdata('user_id')) {
+            $this->session->set_flashdata('error', 'Session Expired. Please Login Again');
+            redirect('login');
+        }
+
+        if ($this->contact_model->load_database()) {
+
+            if ($this->input->is_ajax_request()) 
+            {
+            }
+            else {
+                // If it's not an AJAX request, show an error message
+                $this->session->set_flashdata('error', 'Direct Access Not Allowed.');
+                redirect('dashboard');
+            }
+
+        }
+        else {
+            $this->session->set_flashdata('error', 'Unable to Communicate with Database...');
+            redirect('dashboard');
+        }
+
+    }
+
+        /* PHP Function to Handle Post with JSON Data instead of FORM data */
+    public function delete_contact()
+    {
+        if (!$this->session->has_userdata('user_id')) {
+            $this->session->set_flashdata('error', 'Session Expired. Please Login Again');
+            redirect('login');
+        }
+
+        if ($this->contact_model->load_database()) {
+
+            if ($this->input->is_ajax_request()) 
+            {
+
+                $phone_number = $this->input->input_stream('phone_number');
+                $sanitized_phone_number = $this->security->xss_clean( $phone_number);
+                $user_id = $this->session->userdata('user_id');
+                $result = $this->contact_model->delete_contact_by_phone_with_user_id($sanitized_phone_number, $user_id);
+
+                if ($result) {
+           
+                    $response['status'] = 'success';
+                    $response['message'] = 'Contact Delete Successfully. ' . $sanitized_phone_number;
+                } else {
+               
+                    $response['status'] = 'error';
+                    $response['message'] = 'Unable to Delete Due to Some Issue Because '. $sanitized_phone_number;
+                }
+                echo json_encode($response);  
+
+            }
+            else {
+                // If it's not an AJAX request, show an error message
+                $this->session->set_flashdata('error', 'Direct Access Not Allowed.');
+                redirect('dashboard');
+            }
+
+        }
+        else {
+            $this->session->set_flashdata('error', 'Unable to Communicate with Database...');
+            redirect('dashboard');
+        }
+
+    }
+
+$uploaded_file_info = $_FILES['image_location'];
+
+// Access various properties of the uploaded file
+$file_name = $uploaded_file_info['name']; // This will be "marketing-category.png"
+$file_type = $uploaded_file_info['type']; // This will be the MIME type of the file (e.g., "image/png")
+$file_size = $uploaded_file_info['size']; // This will be the size of the file in bytes
+$file_tmp_name = $uploaded_file_info['tmp_name']; // This will be the temporary filename of the uploaded file
+$file_error = $uploaded_file_info['error'];
+
+
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
+
+
+$manager = new ImageManager(Driver::class);
+
+$image = $manager->read('images/example.jpg');
+
+$image->resize(200, 250);
+
+$image->encode(new WebpEncoder(quality: 65))->save('images/foo.png');
+
+$original_image = imagecreatefromjpeg('path/to/original.jpg');
+$new_width = 200;
+$new_height = 250;
+$resized_image = imagecreatetruecolor($new_width, $new_height);
+imagecopyresampled($resized_image, $original_image, 0, 0, 0, 0, $new_width, $new_height, imagesx($original_image), imagesy($original_image));
+$quality = 10;
+imagewebp($resized_image, 'path/to/resized.webp', $quality);
+imagedestroy($original_image);
+imagedestroy($resized_image);

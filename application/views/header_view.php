@@ -15,7 +15,7 @@
         </a>
       </div>
       <div class="col-6 d-flex justify-content-center align-items-center">
-        <a href="#" class="btn btn-primary btn-lg btn-block border-line-4">+ Add New</a>
+        <button id="add-new-btn" class="btn btn-primary btn-lg btn-block border-line-4">+ Add New</button>
       </div>
     </div>
   </div>
@@ -25,7 +25,7 @@
   <div class="col-12 m-auto">
 
     <?php if ($this->session->userdata('user_id')) : ?>
-      Welcome <b> <?php echo $this->session->userdata('user_nickname');?> </b>
+      Welcome, <b> <?php echo html_escape($this->session->userdata('user_nickname'));?> </b>
   </div>
   <div class="col-12 m-auto">
       <a href="<?php echo site_url('auth/logout'); ?>" class="btn btn-secondary border-line-3">Logout</a>
