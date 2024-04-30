@@ -132,3 +132,15 @@ $this->pagination->initialize($config);
 $data['results'] = $this->db->get('table', $config['per_page'], $this->uri->segment(3));
 
 $this->load->view('your_view', $data);
+
+/*limit & offset
+1 0
+2 8
+3 16
+4 24
+5 32
+6 40
+7 48
+8 56
+9 64
+10 72

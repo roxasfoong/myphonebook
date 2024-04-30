@@ -10,13 +10,9 @@ class Dashboard extends CI_Controller
                 $this->load->model('contact_model');
         }
 
-        public function index($page_number = null)
+        public function index()
         {
-                $offset = 0;
-                if ($page_number === 0 || $page_number === 1) {
-                        $offset = 0;
-                } 
-                
+
                 if (!$this->session->has_userdata('user_id')) {
                         redirect('login');
                 }
@@ -28,8 +24,9 @@ class Dashboard extends CI_Controller
                 if ($this->contact_model->load_database()) {
                         $data['recently_added_data'] = $this->contact_model->get_recently_added_contact($this->session->userdata('user_id'));
                         $data['total_number_of_contact'] = $this->contact_model->get_all_contacts($this->session->userdata('user_id'));
-                        $data['all_contact_data'] = $this->contact_model->get_all_contacts_with_pagination($this->session->userdata('user_id'),$offset);
+                        $data['all_contact_data'] = $this->contact_model->get_all_contacts_with_offset($this->session->userdata('user_id'),1);
                         $data['total_number_of_page'] = $this->contact_model->get_total_number_of_page($this->session->userdata('user_id'));
+                        $data['pagination_data'] = $this->contact_model->generatePagination($this->contact_model->count_max_page($this->session->userdata('user_id')),1);
                         if (!$data['recently_added_data']) {
                                 $data['recently_added_data'] = array(
                                         'name' => 1,

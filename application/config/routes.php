@@ -53,7 +53,6 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['dashboard'] = 'dashboard';
-$route['dashboard/index/(:num)'] = 'dashboard/index/$1';
 $route['register'] = 'register';
 $route['api/c_seeder/(:any)'] = 'api/c_seeder/$1';
 $route['api/add_contact'] = 'api/add_contact';
@@ -61,6 +60,7 @@ $route['api/get_last_contact'] = 'api/get_last_contact';
 $route['api/delete_contact'] = 'api/delete_contact';
 $route['api/get_contact_for_edit'] = 'api/get_contact_for_edit';
 $route['api/update_contact'] = 'api/update_contact';
+$route['api/update_contact_view'] = 'api/update_contact_view';
 
 
 

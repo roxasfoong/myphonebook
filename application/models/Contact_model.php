@@ -73,6 +73,12 @@ class Contact_model extends CI_Model
         return $result;
     }
 
+    public function count_total_row($user_id){
+
+       return $this->db->where('user_id', $user_id)->count_all_results('contacts');
+
+    }
+
     public function get_total_number_of_page($user_id)
     {
         $total = count($this->db->where('user_id', $user_id)->order_by('created_at', 'ASC')->get('contacts')->result_array());
@@ -88,7 +94,7 @@ class Contact_model extends CI_Model
 
 
 
-    public function get_all_contacts_with_pagination($user_id, $page_number)
+    public function get_all_contacts_with_pagination($user_id)
     {
         $config['base_url'] = site_url('dashboard/index');
         $config['per_page'] = 8;
@@ -131,6 +137,119 @@ class Contact_model extends CI_Model
             unset($contact['user_id']);
         }
     
+        return $result;
+    }
+
+    public function generatePagination($totalPages, $currentPage) {
+        $totalPages = intval($totalPages);
+        $currentPage = intval($currentPage);
+    
+        $paginationHTML = '';
+    
+        if ($totalPages > 1) {
+            if ($currentPage > 1) {
+                $paginationHTML .= '<button onclick="gotoPage(' . ($currentPage - 1) . ')">&lt;</button>';
+            }
+            if ($currentPage > 1) {
+                $paginationHTML .= '<button onclick="gotoPage(' . ($currentPage - 1) . ')">' . ($currentPage - 1) . '</button>';
+            }
+            $paginationHTML .= '<strong>' . $currentPage . '</strong>';
+            if ($currentPage < $totalPages) {
+                $paginationHTML .= '<button onclick="gotoPage(' . ($currentPage + 1) . ')">' . ($currentPage + 1) . '</button>';
+            }
+            if ($currentPage < $totalPages) {
+                $paginationHTML .= '<button onclick="gotoPage(' . ($currentPage + 1) . ')">&gt;</button>';
+            }
+        }
+    
+        return $paginationHTML;
+    }
+
+    public function count_max_page($user_id)
+    {
+
+        $total_rows = $this->count_total_row($user_id);
+
+        if ($this->count_total_row($user_id) == 0) {
+            return 1;
+        }
+
+        if ($total_rows < 8) {
+            return 1;
+        } else {
+
+            return ($total_rows % 8) > 0 ? (int)($total_rows / 8) + 1 : $total_rows / 8;
+        }
+    }
+
+    public function compare_page_number($user_id,$current_page)
+    {
+        $newPage = 0;
+
+        if($current_page > $this->count_max_page($user_id)){
+            $newPage = $this->count_max_page($user_id);
+        }else{
+            $newPage = $current_page;
+        }
+
+        return $newPage;
+    }
+
+    public function get_all_contacts_with_offset($user_id, $current_page)
+    {
+        
+        $total_rows = count($this->db->where('user_id', $user_id)->get('contacts')->result_array());
+     
+        if ($total_rows == 0) {
+            return null;
+        }
+
+        $max_page_number=0;
+
+        if($total_rows < 8){
+
+            $max_page_number=1;
+
+        }else{
+
+            $max_page_number = ($total_rows % 8 ) > 0 ? (int)($total_rows/8) + 1 : $total_rows/8;
+
+        }
+
+        $start_from = 0;
+
+        switch($current_page)
+        {
+            case 0 :
+                $start_from = 0;
+                break;
+            case 1 :
+                $start_from = 0;
+                break;
+            case 2 : 
+                $start_from = 8;
+                break;
+            default:
+            $start_from = ($current_page-1) * 8;
+            break;
+        }
+
+        if($start_from >= $total_rows){
+            $start_from = ($max_page_number-1) * 8;
+        }
+
+        $result = $this->db
+            ->where('user_id', $user_id)
+            ->order_by('created_at', 'ASC')
+            ->limit(8, $start_from)
+            ->get('contacts')
+            ->result_array();
+
+        foreach ($result as &$contact) {
+            unset($contact['id']);
+            unset($contact['user_id']);
+        }
+
         return $result;
     }
 

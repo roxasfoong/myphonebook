@@ -154,7 +154,7 @@
               //console.log(`<b>${message}<b>`);
               if (status === 'success') {
                 refreshRecentlyAdded();
-                window.location.href = window.location.pathname;
+                refreshContactView();
                 Swal.fire({
                   title: 'Success!',
                   html: `<b> ${message} <b> `,
@@ -325,6 +325,463 @@
       });
     }
 
+    function refreshContactView() {
+      var currentViewPage = document.getElementById('currentPage');
+      $.ajax({
+            url: '<?php echo site_url("api/update_contact_view"); ?>',
+            type: 'POST',
+            contentType: 'application/json',
+            data: {
+              current_page: currentViewPage.innerHTML
+            },
+            success: function(response) {
+
+
+              var responseData = JSON.parse(response);
+              var status = responseData.status;
+              var message = responseData.message;
+              var data = responseData.data;
+              var total_row = responseData.total_row;
+              var max_page = responseData.max_page;
+              var new_current_page = responseData.new_current_page;
+              //console.log(`<b>${data}<b>`);
+
+              if (status === 'success') {
+
+                var content_view = document.getElementById('contactView');
+                var currentPage = document.getElementById('currentPage');
+                if(currentPage > max_page)
+                {
+                  currentPage.innerHTML = max_page;
+                }
+                content_view.innerHTML = '';
+                var first_part = '';
+                var second_part = '';
+                if(total_row == 0){
+                  first_part =
+                    `
+                    <div class="row text-center add-shadow-4">
+                        <div class="col-12 bg-primary text-white">
+                            <h2>Contacts</h3>
+                        </div>
+                        <div class="col-12 bg-info text-white add-text-shadow-1">
+                            <h3>Number of Contacts : 0 </h3>
+                        </div>
+                        <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+                            <h5>Current Page : <span id="currentPage">1</span>  </h5>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8 col-md-6 col-lg-6 col-xl-6 col-11 m-auto">
+                            <div class="card add-shadow-4">
+                                <div class="card-body text-center">
+                                  You Have Not Added Any Contact
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    content_view.innerHTML = first_part;
+                    return;
+                }else{
+
+                  first_part = `
+    <div class="row text-center add-shadow-4">
+        <div class="col-12 bg-primary text-white">
+            <h2>Contacts</h3>
+        </div>
+        <div class="col-12 bg-info text-white add-text-shadow-1">
+            <h4>Total : ${total_row} </h4>
+        </div>
+        <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+            <h5>Current Page : <span id="currentPage">${new_current_page}</span>  </h5>
+        </div>
+    </div>
+
+    <div class="row">
+        ${responseData.data.map(contact => `
+            <div class="col-sm-6 col-lg-3 col-xl-3 col-11 m-auto">
+                <div class="card add-shadow-4">
+                    <img src="${contact.image_location}" class="card-img-top img-fluid custom-card-img" alt="...">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="name">Name:</div>
+                                <p class="card-text truncate" id="name">${contact.name}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="address">Address:</div>
+                                <p class="card-text truncate" id="address">${contact.address}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="email">Email:</div>
+                                <p class="card-text truncate" id="email">${contact.email}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="phone">Phone:</div>
+                                <p class="card-text truncate" id="phone">${contact.phone_number}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="phone">Remark:</div>
+                                <p class="card-text truncate" id="remark">${contact.remark}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-4 col-6 d-flex justify-content-center align-items-center m-auto">
+                                <button value="${contact.phone_number}" id="recentEditButton" class="btn btn-success btn-lg btn-block border-line-1" onclick="editContact('${contact.phone_number}')">Edit</button> 
+                            </div>
+                            <div class="col-sm-4 col-6 d-flex justify-content-center align-items-center m-auto">
+                                <button value="${contact.phone_number}" id="recentDeleteButton" class="btn btn-danger btn-lg btn-block border-line-2" onclick="deleteContact('${contact.phone_number}')">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+`;
+
+                }
+                second_part =
+                  `
+                    <div class="row mb-3">
+                        <div class="col-12 text-center">
+                            Total Pages : <b> ${max_page} </b>
+                        </div>
+                        <div class="col-12">
+                            <div class="pagination" id="pagination">
+
+                                    ${generatePagination(max_page,new_current_page)}
+
+                            </div>
+                        </div>
+                    </div>
+                  `;
+
+                  if(total_row >= 1){
+                  third_part =
+                    `
+                    <div class="row">
+                      <div class="col-12 text-center d-flex justify-content-center align-items-center m-auto">
+                          <div class="page-input input-group add-shadow-4">
+
+                          <input type="text" class="form-control text-center" id="pageInput" placeholder="Page...">
+                          <button class="btn btn-danger" type="button" onclick="gotoPage(document.getElementById('pageInput').value)">Go</button>
+
+                          </div>
+                      </div>
+                    </div>
+                    `;
+              }else{
+                    third_part =
+                    `
+                    `
+                  }
+
+                  content_view.innerHTML = first_part + second_part + third_part;
+
+                
+
+
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  showConfirmButton: false,
+                  html: `<div class="bg-danger text-white"> ${message} </div>`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+                
+              }
+            },
+            error: function(xhr, status, error) {
+
+              if (xhr.responseText.includes('Duplicate entry')) {
+
+                const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+
+                const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+
+                Swal.fire({
+                  title: 'Error!',
+                  text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+
+
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Some Database Error...',
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+              }
+
+            }
+          });
+
+    }
+
+    function gotoContactView(pageNumber) {
+          
+      $.ajax({
+            url: '<?php echo site_url("api/update_contact_view"); ?>',
+            type: 'POST',
+            contentType: 'application/json',
+            data: {
+              current_page: pageNumber
+            },
+            success: function(response) {
+
+
+              var responseData = JSON.parse(response);
+              var status = responseData.status;
+              var message = responseData.message;
+              var data = responseData.data;
+              var total_row = responseData.total_row;
+              var max_page = responseData.max_page;
+              if(pageNumber > max_page){
+                pageNumber = max_page;
+              }
+              //console.log(`<b>${data}<b>`);
+
+              if (status === 'success' && data) {
+
+                var content_view = document.getElementById('contactView');
+                var currentPage = document.getElementById('currentPage');
+                content_view.innerHTML = '';
+                var first_part = '';
+                var second_part = '';
+                var third_part = '';
+                if(total_row == 0){
+                  first_part =
+                    `
+                    <div class="row text-center add-shadow-4">
+                        <div class="col-12 bg-primary text-white">
+                            <h2>Contacts</h3>
+                        </div>
+                        <div class="col-12 bg-info text-white add-text-shadow-1">
+                            <h3>Number of Contacts : 0 </h3>
+                        </div>
+                        <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+                            <h5>Current Page : <span id="currentPage">1</span>  </h5>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8 col-md-6 col-lg-6 col-xl-6 col-11 m-auto">
+                            <div class="card add-shadow-4">
+                                <div class="card-body text-center">
+                                  You Have Not Added Any Contact
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }else{
+
+                  first_part = `
+    <div class="row text-center add-shadow-4">
+        <div class="col-12 bg-primary text-white">
+            <h2>Contacts</h3>
+        </div>
+        <div class="col-12 bg-info text-white add-text-shadow-1">
+            <h4>Total : ${total_row} </h4>
+        </div>
+        <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+            <h5>Current Page : <span id="currentPage">${pageNumber}</span>  </h5>
+        </div>
+    </div>
+
+    <div class="row">
+        ${responseData.data.map(contact => `
+            <div class="col-sm-6 col-lg-3 col-xl-3 col-11 m-auto">
+                <div class="card add-shadow-4">
+                    <img src="${contact.image_location}" class="card-img-top img-fluid custom-card-img" alt="...">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="name">Name:</div>
+                                <p class="card-text truncate" id="name">${contact.name}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="address">Address:</div>
+                                <p class="card-text truncate" id="address">${contact.address}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="email">Email:</div>
+                                <p class="card-text truncate" id="email">${contact.email}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="phone">Phone:</div>
+                                <p class="card-text truncate" id="phone">${contact.phone_number}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                                    <div class="col">
+                                        <div class="card-label" for="remark">Remark:</div>
+                                        <p class="card-text truncate" id="remark">${data.remark}</p>
+                                    </div>
+                                </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-4 col-6 d-flex justify-content-center align-items-center m-auto">
+                                <button value="${contact.phone_number}" id="recentEditButton" class="btn btn-success btn-lg btn-block border-line-1" onclick="editContact('${contact.phone_number}')">Edit</button> 
+                            </div>
+                            <div class="col-sm-4 col-6 d-flex justify-content-center align-items-center m-auto">
+                                <button value="${contact.phone_number}" id="recentDeleteButton" class="btn btn-danger btn-lg btn-block border-line-2" onclick="deleteContact('${contact.phone_number}')">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+`;
+
+                }
+                second_part =
+                  `
+                    <div class="row mb-3">
+                        <div class="col-12 text-center">
+                            Total Pages : <b> ${max_page} </b>
+                        </div>
+                        <div class="col-12">
+                            <div class="pagination" id="pagination">
+
+                                    ${generatePagination(max_page,pageNumber)}
+
+                            </div>
+                        </div>
+                    </div>
+                  `;
+
+                  if(total_row >= 1){
+                  third_part =
+                    `
+                    <div class="row">
+                      <div class="col-12 text-center d-flex justify-content-center align-items-center m-auto">
+                          <div class="page-input input-group add-shadow-4">
+
+                          <input type="text" class="form-control text-center" id="pageInput" placeholder="Page...">
+                          <button class="btn btn-danger" type="button" onclick="gotoPage(document.getElementById('pageInput').value)">Go</button>
+
+                          </div>
+                      </div>
+                    </div>
+                    `;
+              }else{
+                    third_part =
+                    `
+                    `
+                  }
+
+                  content_view.innerHTML = first_part + second_part + third_part;
+
+                
+
+
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  showConfirmButton: false,
+                  html: `<div class="bg-danger text-white"> ${message} </div>`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+                
+              }
+            },
+            error: function(xhr, status, error) {
+
+              if (xhr.responseText.includes('Duplicate entry')) {
+
+                const errorMessage = xhr.responseText.match(/Duplicate entry '.*?'/)[0];
+
+                const phoneNumber = errorMessage.match(/'.*?-(.*?)'/)[1];
+
+                Swal.fire({
+                  title: 'Error!',
+                  text: `Duplicated Phone Number : ${phoneNumber} Detected!`,
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+
+
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Some Database Error...',
+                  icon: 'error',
+                  showConfirmButton: true,
+                  confirmButtonColor: '#d33',
+                  cancelButtonColor: '#000000',
+                });
+              }
+
+            }
+          });
+
+    }
+
+  
+function generatePagination(totalPages, currentPage) {
+  totalPages = parseInt(totalPages);
+    currentPage = parseInt(currentPage);
+
+    let paginationHTML = '';
+
+    if (totalPages > 1) {
+        if (currentPage > 1) {
+            paginationHTML += `<button onclick="gotoPage(${currentPage - 1})">&lt;</button>`;
+        }
+        if (currentPage > 1) {
+            paginationHTML += `<button onclick="gotoPage(${currentPage - 1})">${currentPage - 1}</button>`;
+        }
+        paginationHTML += `<strong>${currentPage}</strong>`;
+        if (currentPage < totalPages) {
+            paginationHTML += `<button onclick="gotoPage(${currentPage + 1})">${currentPage + 1}</button>`;
+        }
+        if (currentPage < totalPages) {
+            paginationHTML += `<button onclick="gotoPage(${currentPage + 1})">&gt;</button>`;
+        }
+    }
+
+    return paginationHTML;
+}
+
+
+function gotoPage(pageNumber) {
+
+    gotoContactView(pageNumber);
+
+}
 
 
     function deleteContact(input_phone_number) {
@@ -350,7 +807,7 @@
               phone_number: input_phone_number
             },
             success: function(response) {
-              
+
 
               var responseData = JSON.parse(response);
               var status = responseData.status;
@@ -366,7 +823,7 @@
                 });
 
                 refreshRecentlyAdded();
-                window.location.href = window.location.pathname;
+                refreshContactView();
               } else {
                 Swal.fire({
                   title: 'Error!',
@@ -441,11 +898,11 @@
         <div class="fixed-image">
             <img id="add-image-frame" src="${data.image_location}" class="img-fluid" alt="Contact Image">
         </div>
-    </div>
-    <div class="col-12">
-    <small class="text-muted"><em>(*Supported Format: .webp, .png, .jpeg | Max File Size:10MB)</em></span>
-    </div>
-</div>
+            </div>
+            <div class="col-12">
+            <small class="text-muted"><em>(*Supported Format: .webp, .png, .jpeg | Max File Size:10MB)</em></span>
+            </div>
+        </div>
       <div class="row mb-3">
         <div class="col-sm-6 col-12 m-auto ">
         <input class="mb-3" type="file" class="form-control-file" id="image" name="image_location" accept="image/*" onchange="previewImage(this)">
@@ -534,8 +991,8 @@
                     var message = responseData.message;
                     //console.log(`<b>${message}<b>`);
                     if (status === 'success') {
-                      window.location.href = window.location.pathname;
                       refreshRecentlyAdded();
+                      refreshContactView();
                       Swal.fire({
                         title: 'Success!',
                         html: `<b> ${message} <b> `,
@@ -650,40 +1107,7 @@
       }
     }
 
-    function goToPage() {
 
-      var pageNumber = document.getElementById("pageInput").value;
-
-      if (!isNaN(pageNumber)) {
-
-        switch (true) {
-          case (pageNumber === 0 || pageNumber === 1):
-            pageNumber = 1;
-            break;
-          default:
-            if (pageNumber > 1) {
-              pageNumber -= 1;
-              pageNumber *= 8;
-            }
-            break;
-        }
-
-        window.location.href = "<?php echo site_url('dashboard/index') ?>" + "/" + pageNumber;
-
-      } else {
-
-        Swal.fire({
-          title: 'Error!',
-          text: `Please enter a valid page number.`,
-          icon: 'error',
-          showConfirmButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#000000',
-        });
-
-      }
-
-    }
   </script>
 
 </body>

@@ -5,17 +5,24 @@
 
   pagination
 
+  HTML ID: currentPage
+  Usage  : Keep Track of page number that user is viewing
+
 -->
 
 <div class="container" id="contactView">
 
     <?php if ($total_number_of_contact == null) : ?>
+
         <div class="row text-center add-shadow-4">
             <div class="col-12 bg-primary text-white">
                 <h2>Contacts</h3>
             </div>
             <div class="col-12 bg-info text-white add-text-shadow-1">
                 <h3>Number of Contacts : 0 </h3>
+            </div>
+            <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+                <h5>Current Page : <span id="currentPage">1</span>  </h5>
             </div>
         </div>
 
@@ -28,13 +35,18 @@
                 </div>
             </div>
         </div>
+
     <?php else : ?>
+
         <div class="row text-center add-shadow-4">
             <div class="col-12 bg-primary text-white">
                 <h2>Contacts</h3>
             </div>
             <div class="col-12 bg-info text-white add-text-shadow-1">
-                <h4>Total : <?php echo count($total_number_of_contact); ?> </h3>
+                <h4>Total : <?php echo count($total_number_of_contact); ?> </h4>
+            </div>
+            <div class="col-12 bg-white text-dark add-shadow-2 m-auto">
+                <h5>Current Page : <span id="currentPage">1</span>  </h5>
             </div>
         </div>
         
@@ -68,6 +80,12 @@
                                 <p class="card-text truncate" id="phone"><?php echo $contact['phone_number']; ?></p>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card-label" for="phone">Remark:</div>
+                                <p class="card-text truncate" id="remark"><?php echo $contact['remark']; ?></p>
+                            </div>
+                        </div>
                         <div class="row mt-3">
                             <div class="col-sm-4 col-6 d-flex justify-content-center align-items-center m-auto">
                             <button value="<?php echo $contact['phone_number']; ?>" id="recentEditButton" class="btn btn-success btn-lg btn-block border-line-1" onclick="editContact('<?php echo $contact['phone_number']; ?>')">Edit</button> 
@@ -91,7 +109,7 @@
             <div class="col-12">
                 <div class="pagination" id="pagination">
 
-                        <?php echo $this->pagination->create_links(); ?>
+                        <?php echo $pagination_data; ?>
 
                 </div>
             </div>
@@ -103,7 +121,7 @@
                 <div class="page-input input-group add-shadow-4">
 
                 <input type="text" class="form-control text-center" id="pageInput" placeholder="Page...">
-                <button class="btn btn-danger" type="button" onclick="goToPage()">Go</button>
+                <button class="btn btn-danger" type="button" onclick="gotoPage(document.getElementById('pageInput').value)">Go</button>
 
                 </div>
             </div>
